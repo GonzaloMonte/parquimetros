@@ -107,7 +107,7 @@ public class VentanaPrincipal  extends javax.swing.JFrame {
 	        	 //deberia abrir unidad del ispector
 	         }
 	            String servidor = "localhost:3306";
-	            String baseDatos = "batallas";
+	            String baseDatos = "parquimetros";
 	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
 	                   baseDatos + "?serverTimezone=America/Argentina/Buenos_Aires";
 	   
