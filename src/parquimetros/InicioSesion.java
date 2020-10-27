@@ -6,6 +6,12 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import java.awt.FlowLayout;
+import java.awt.CardLayout;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class InicioSesion extends JFrame {
 
@@ -35,8 +41,23 @@ public class InicioSesion extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel TituloLabel = new JLabel("Seleccione Usuario");
+		TituloLabel.setBounds(178, 60, 118, 32);
+		contentPane.add(TituloLabel);
+		
+		JButton btnAdmin = new JButton("Admin");
+		btnAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnAdmin.setBounds(56, 175, 129, 44);
+		contentPane.add(btnAdmin);
+		
+		JButton btnInspector = new JButton("Inspector");
+		btnInspector.setBounds(291, 175, 118, 44);
+		contentPane.add(btnInspector);
 	}
-
 }
