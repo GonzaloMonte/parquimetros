@@ -2,6 +2,7 @@ package parquimetros;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -15,24 +16,31 @@ import java.sql.Types;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import quick.dbtable.DBTable;
 
 
-public class VentanaAdmin extends javax.swing.JInternalFrame 
+public class VentanaAdmin extends JFrame
 {
 	   private JPanel pnlConsulta;
+	   private JPanel pnlEntrada;
+	   private JPasswordField ingresoContraseña;
+	   private JLabel TituloLabel;
 	   private JTextArea txtConsulta;
 	   private JButton botonBorrar;
 	   private JButton ejecutarBot;
@@ -46,21 +54,59 @@ public class VentanaAdmin extends javax.swing.JInternalFrame
 	   public VentanaAdmin() 
 	   {
 	      super();
+	      iniGUIsesion();
 	      initGUI();
+	      
 	   }
+		public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						VentanaAdmin frame = new VentanaAdmin();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	   private void iniGUIsesion() {
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setBounds(100, 100, 450, 300);
+			pnlEntrada = new JPanel();
+			pnlEntrada.setBorder(new EmptyBorder(5, 5, 5, 5));
+			pnlEntrada.setLayout(null);
+		
+			
+			JLabel TituloLabel = new JLabel("Introdusca contraseña del administrador :");
+			TituloLabel.setBounds(100, 90, 300, 80);
+			pnlEntrada.add(TituloLabel);
+			
+			JPasswordField ingresoContraseña = new JPasswordField();
+			ingresoContraseña.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+				}
+			});
+			ingresoContraseña.setBounds(100, 175, 200, 44);
+		
+			pnlEntrada.add(ingresoContraseña);
+			pnlEntrada.setVisible(true);
+			 getContentPane().add(pnlEntrada);
+		}
 	   
 	   private void initGUI() 
 	   {
 	      try {
 	         setPreferredSize(new Dimension(800, 600));
 	         this.setBounds(0, 0, 800, 600);
-	         setVisible(true);
+	         setVisible(false);
 	         BorderLayout thisLayout = new BorderLayout();
 	         this.setTitle("Consultas ");
 	         getContentPane().setLayout(thisLayout);
-	         this.setClosable(true);
+
 	         this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-	         this.setMaximizable(true);
+
 	         this.addComponentListener(new ComponentAdapter() {
 		            public void componentHidden(ComponentEvent evt) {
 		               thisDesconectorBD(evt);
