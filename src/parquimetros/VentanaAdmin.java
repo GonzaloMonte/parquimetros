@@ -3,6 +3,7 @@ package parquimetros;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -39,6 +40,7 @@ public class VentanaAdmin extends JFrame
 {
 	   private JPanel pnlConsulta;
 	   private JPanel pnlEntrada;
+	   private JPanel pnlListas;
 	   private JPasswordField ingresoContraseña;
 	   private JLabel TituloLabel;
 	   private JTextArea txtConsulta;
@@ -55,7 +57,7 @@ public class VentanaAdmin extends JFrame
 	   {
 	      super();
 	      iniGUIsesion();
-	      initGUI();
+
 	      
 	   }
 		public static void main(String[] args) {
@@ -77,7 +79,8 @@ public class VentanaAdmin extends JFrame
 			pnlEntrada.setBorder(new EmptyBorder(5, 5, 5, 5));
 			pnlEntrada.setLayout(null);
 		
-			
+			pnlListas=new JPanel();
+			pnlListas.setLayout(new GridLayout(1,2));
 			JLabel TituloLabel = new JLabel("Introdusca contraseña del administrador :");
 			TituloLabel.setBounds(100, 90, 300, 80);
 			pnlEntrada.add(TituloLabel);
@@ -85,7 +88,8 @@ public class VentanaAdmin extends JFrame
 			JPasswordField ingresoContraseña = new JPasswordField();
 			ingresoContraseña.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+					pnlEntrada.setVisible(false);
+				      initGUI();
 				}
 			});
 			ingresoContraseña.setBounds(100, 175, 200, 44);
@@ -100,25 +104,18 @@ public class VentanaAdmin extends JFrame
 	      try {
 	         setPreferredSize(new Dimension(800, 600));
 	         this.setBounds(0, 0, 800, 600);
-	         setVisible(false);
+	         setVisible(true);
 	         BorderLayout thisLayout = new BorderLayout();
 	         this.setTitle("Consultas ");
 	         getContentPane().setLayout(thisLayout);
 
 	         this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-	         this.addComponentListener(new ComponentAdapter() {
-		            public void componentHidden(ComponentEvent evt) {
-		               thisDesconectorBD(evt);
-		            }
-		            public void componentShown(ComponentEvent evt) {
-		               thisConectorBD(evt);
-		            }
-		         });
-	         
+	         conectarBD();
 	        
 	         lTablas=new JList<String>(llenarTabla());
 	         lTablas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	         
 	         lTablas.addListSelectionListener(new ListSelectionListener() { 
 	        	   
 	        	       
@@ -130,9 +127,9 @@ public class VentanaAdmin extends JFrame
 		        	        } 
 					} 
 	        	   });
-	 
-	         lAtributos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	         
+	         
+	       
 	      
 	         {
 	            pnlConsulta = new JPanel();
@@ -156,7 +153,7 @@ public class VentanaAdmin extends JFrame
 	               ejecutarBot.setText("Ejecutar");
 	               ejecutarBot.addActionListener(new ActionListener() {
 	                  public void actionPerformed(ActionEvent evt) {
-	                     btnRefreshTabla(evt);
+	                   btnRefreshTabla(evt);
 	                  }
 	               });
 	            }
@@ -179,13 +176,15 @@ public class VentanaAdmin extends JFrame
 	            getContentPane().add(tabla, BorderLayout.CENTER);           
 	                      
 	           // setea la tabla para sólo lectura (no se puede editar su contenido)  
-	           tabla.setEditable(false);       
-	           
-	           
-	           
+	           tabla.setEditable(false);
+	           pnlListas.add(lTablas);
+	          // pnlListas.add(lAtributos);
+	           pnlListas.setVisible(true);
+	         
+	           pnlConsulta.add(pnlListas);
+	          
 	         }
-	         pnlConsulta.add(lTablas);
-	         pnlConsulta.add(lAtributos);
+	       
 	      }
 	      catch (Exception e) {
 	         e.printStackTrace();
@@ -206,8 +205,8 @@ public class VentanaAdmin extends JFrame
 	   {
 	      this.refrescarTabla();      
 	   }
-	       
-	   private void conectarBD()
+	    
+	   private void conectarBD() 
 	   {
 	         try
 	         {
@@ -221,8 +220,9 @@ public class VentanaAdmin extends JFrame
 	            
 	            
 	       //establece una conexión con la  B.D. "parquimetros"  usando directamante una tabla DBTable    
+	            tabla.connectDatabase(driver, uriConexion, usuario, clave);
 	            this.conexionBD = DriverManager.getConnection(uriConexion, usuario, clave);
-	            
+	           
 	         }
 	         catch (SQLException ex)
 	         {
@@ -235,7 +235,11 @@ public class VentanaAdmin extends JFrame
 	            System.out.println("SQLState: " + ex.getSQLState());
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }
-	
+	         catch (ClassNotFoundException e)
+	         {
+	            e.printStackTrace();
+	         }
+	      
 	      
 	   }
 
@@ -337,6 +341,7 @@ public class VentanaAdmin extends JFrame
 		   
 		   }
 		   lAtributos=new JList<String>(model);
+		   lAtributos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		   rs.close();
 		
 		  
