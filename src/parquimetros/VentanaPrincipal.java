@@ -64,7 +64,7 @@ public class VentanaPrincipal  extends javax.swing.JFrame {
           entrar.addActionListener(new ActionListener(){
               public void actionPerformed(ActionEvent e) {
             	  usuario=ingresoUsuario.getText();
-            	  //conectarBD();
+            	  conectarBD();
                 
                 }
                 });
