@@ -76,7 +76,7 @@ public class VentanaAdmin extends JFrame
 			});
 		}
 	   private void iniGUIsesion() {
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setBounds(100, 100, 450, 300);
 			pnlEntrada = new JPanel();
 			pnlEntrada.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -121,7 +121,7 @@ public class VentanaAdmin extends JFrame
 	         this.setTitle("Consultas ");
 	         getContentPane().setLayout(thisLayout);
 
-	         this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+	         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 	         conectarBD();
 	        

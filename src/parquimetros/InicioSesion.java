@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 public class InicioSesion extends JFrame {
 
 	private JPanel contentPane;
-
+	private  VentanaAdmin ventanaAdmin;
 	/**
 	 * Launch the application.
 	 */
@@ -41,9 +41,8 @@ public class InicioSesion extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		this.add(contentPane);
 		contentPane.setLayout(null);
-		
 		JLabel TituloLabel = new JLabel("Seleccione Usuario");
 		TituloLabel.setBounds(178, 60, 118, 32);
 		contentPane.add(TituloLabel);
@@ -51,6 +50,9 @@ public class InicioSesion extends JFrame {
 		JButton btnAdmin = new JButton("Admin");
 		btnAdmin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				ventanaAdmin=new VentanaAdmin();
+				cerrarVentana();
+				ventanaAdmin.setVisible(true);
 			}
 		});
 		btnAdmin.setBounds(56, 175, 129, 44);
@@ -59,5 +61,8 @@ public class InicioSesion extends JFrame {
 		JButton btnInspector = new JButton("Inspector");
 		btnInspector.setBounds(291, 175, 118, 44);
 		contentPane.add(btnInspector);
+	}
+	private void cerrarVentana() {
+		this.dispose();
 	}
 }
