@@ -17,6 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,6 +32,7 @@ public class Gui_LoginInspector extends JFrame {
 	public DBTable table; // Es la tabla que usaremos para la conexion a la BD
 	private String legajo;
 	private String password;
+	protected Connection conexionBD=null;
 
 	/**
 	 * Launch the application.
@@ -83,8 +85,8 @@ public class Gui_LoginInspector extends JFrame {
 		JButton btnIniciarSesion = new JButton("Iniciar Sesion");
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				conectarBDinsp();
-				if (checkInspector(Legajotext.getText(),Arrays.toString(LegajoPass.getPassword()))) {
+				conectarBD();
+				if (checkInspector(Legajotext.getText(),String.valueOf(LegajoPass.getPassword()))) {
 					//ACTIVAR INTERFAZ INSPECTOR
 					
 				}else
@@ -97,6 +99,53 @@ public class Gui_LoginInspector extends JFrame {
 		btnIniciarSesion.setBounds(283, 158, 103, 23);
 		contentPane.add(btnIniciarSesion);
 }
+	private void conectarBD()
+	   {
+	         try
+	         {
+	            String driver ="com.mysql.cj.jdbc.Driver";
+	        	String servidor = "localhost:3306";
+	        	String baseDatos = "parquimetros"; 
+	        	String usuario = "inspector";
+	        	String clave = "inspector";
+	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
+	        	                     baseDatos +"?serverTimezone=America/Argentina/Buenos_Aires";
+	            
+	            
+	       //establece una conexión con la  B.D. "parquimetros"  usando directamante una tabla DBTable    
+	           
+	            this.conexionBD = DriverManager.getConnection(uriConexion, usuario, clave);
+	           
+	         }
+	         catch (SQLException ex)
+	         {
+	            JOptionPane.showMessageDialog(this,
+	                           "Se produjo un error al intentar conectarse a la base de datos.\n" 
+	                            + ex.getMessage(),
+	                            "Error",
+	                            JOptionPane.ERROR_MESSAGE);
+	            System.out.println("SQLException: " + ex.getMessage());
+	            System.out.println("SQLState: " + ex.getSQLState());
+	            System.out.println("VendorError: " + ex.getErrorCode());
+	         }
+	       
+	      
+	   }
+
+	   private void desconectarBD()
+	   {
+	         try
+	         {
+	            table.close();            
+	         }
+	         catch (SQLException ex)
+	         {
+	            System.out.println("SQLException: " + ex.getMessage());
+	            System.out.println("SQLState: " + ex.getSQLState());
+	            System.out.println("VendorError: " + ex.getErrorCode());
+	         }      
+	   }
+/*
 	private void conectarBDinsp()
 	   {
 	         try
@@ -108,8 +157,7 @@ public class Gui_LoginInspector extends JFrame {
 	        	String clave = "inspector" ;
 	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
 	        	                     baseDatos +"?serverTimezone=America/Argentina/Buenos_Aires";
-	   
-	       //establece una conexión con la  B.D. "batallas"  usando directamante una tabla DBTable    
+	     
 	            table.connectDatabase(driver, uriConexion, usuario, clave);
 	           
 	         }catch (SQLException ex)
@@ -130,13 +178,13 @@ public class Gui_LoginInspector extends JFrame {
 	   }
 	
 	//chequea que el inspector este en la tabla de usuarios para activar su interfaz
-	
+*/	
 	private boolean checkInspector(String user, String pw) {
 		boolean salida = true;
-		Connection c = table.getConnection();
 		try {
-			Statement st = c.createStatement();
-			ResultSet rs = st.executeQuery("select nombre,apellido from inspectores where legajo="+user+"and password=md5("+ pw +")");
+			Statement st = this.conexionBD.createStatement();
+			ResultSet rs = st.executeQuery("select nombre,apellido from inspectores where legajo='" + user
+					+ "' and password=md5('" + pw + "')");
 		
 			salida = rs.next();
 			st.close();
@@ -147,21 +195,7 @@ public class Gui_LoginInspector extends JFrame {
 		}
 		return salida;
 	}
-	
-	
-	private void desconectarBD()
-	   {
-	         try
-	         {
-	            table.close();            
-	         }
-	         catch (SQLException ex)
-	         {
-	            System.out.println("SQLException: " + ex.getMessage());
-	            System.out.println("SQLState: " + ex.getSQLState());
-	            System.out.println("VendorError: " + ex.getErrorCode());
-	         }      
-	   }
 }
 	
-
+	
+	
