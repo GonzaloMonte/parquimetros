@@ -11,7 +11,9 @@ import java.awt.event.ComponentEvent;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 
 import javax.swing.BorderFactory;
@@ -137,7 +139,7 @@ public class VentanaAdmin extends JFrame
 					public void valueChanged(ListSelectionEvent event) {
 						 if (!event.getValueIsAdjusting()){ 
 		        	         JList<String> source = (JList<String>)event.getSource(); 
-		        	         tablaElegida = source.getSelectedValue().toString(); 
+		        	         tablaElegida = source.getSelectedValue().toString();
 		        	         llenarListaAtributos();
 		        	        } 
 					} 
@@ -187,16 +189,18 @@ public class VentanaAdmin extends JFrame
 	        	// crea la tabla  
 	        	tabla = new DBTable();
 	        	
+	        	
 	        	// Agrega la tabla al frame (no necesita JScrollPane como Jtable)
 	            getContentPane().add(tabla, BorderLayout.CENTER);           
 	                      
 	           // setea la tabla para sólo lectura (no se puede editar su contenido)  
 	           tabla.setEditable(false);
 	           pnlListas.add(lTablas);
-	          // pnlListas.add(lAtributos);
+	           pnlListas.add(lAtributos);
+	   
 	           pnlListas.setVisible(true);
 	           getContentPane().add(pnlListas, BorderLayout.SOUTH);     
-	          
+	         
 	           
 	          
 	         }
@@ -273,8 +277,9 @@ public class VentanaAdmin extends JFrame
 	   {
 	      try
 	      {    
-	    	 // seteamos la consulta a partir de la cual se obtendrán los datos para llenar la tabla
-	    	 tabla.setSelectSql(this.txtConsulta.getText().trim());
+	    	 Statement stmt = this.conexionBD.createStatement();
+	    	 ResultSet rs= stmt.executeQuery(this.txtConsulta.getText().trim());
+	    	 tabla.refresh(rs);
 	    	 
 	    	  // obtenemos el modelo de la tabla a partir de la consulta para 
 	    	  // modificar la forma en que se muestran de algunas columnas  
@@ -343,16 +348,19 @@ public class VentanaAdmin extends JFrame
 		  
 		   DatabaseMetaData mDatos= conexionBD.getMetaData();
 		
-		   java.sql.ResultSet rs = mDatos.getTables(null,null,tablaElegida,null);
+		   java.sql.ResultSet rs = mDatos.getColumns(null,null,tablaElegida,null);
 				   
 		 
 		   while (rs.next())
 		   {
+			
 		   String nombreTabla = rs.getString(4);
+		   
+		   System.out.println(nombreTabla);
 		    model.addElement(nombreTabla);
 		   
 		   }
-		   lAtributos=new JList<String>(model);
+		   lAtributos.setModel(model);
 		   
 		   rs.close();
 		
