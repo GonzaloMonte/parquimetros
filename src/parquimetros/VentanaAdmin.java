@@ -283,7 +283,7 @@ public class VentanaAdmin extends JFrame
 	    	 
 	    	  // obtenemos el modelo de la tabla a partir de la consulta para 
 	    	  // modificar la forma en que se muestran de algunas columnas  
-	    	  tabla.createColumnModelFromQuery();    	    
+	    	 // tabla.createColumnModelFromQuery();    	    
 	    	  for (int i = 0; i < tabla.getColumnCount(); i++)
 	    	  { // para que muestre correctamente los valores de tipo hora	   		  
 	    		 if	 (tabla.getColumn(i).getType()==Types.TIME)  
@@ -297,7 +297,7 @@ public class VentanaAdmin extends JFrame
 	    		 }
 	          }  
 	    	  // actualizamos el contenido de la tabla.   	     	  
-	    	  tabla.refresh();
+	    	 // tabla.refresh();
 	  
 	          
 	    	  
