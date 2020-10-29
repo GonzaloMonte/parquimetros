@@ -211,15 +211,7 @@ public class VentanaAdmin extends JFrame
 	      }
 	   } 
 
-	   private void thisConectorBD(ComponentEvent evt) 
-	   {
-	      this.conectarBD();
-	   }
-	   
-	   private void thisDesconectorBD(ComponentEvent evt) 
-	   {
-	      this.desconectarBD();
-	   }
+
 
 	   private void btnRefreshTabla(ActionEvent evt) 
 	   {
@@ -278,12 +270,20 @@ public class VentanaAdmin extends JFrame
 	      try
 	      {    
 	    	 Statement stmt = this.conexionBD.createStatement();
-	    	 ResultSet rs= stmt.executeQuery(this.txtConsulta.getText().trim());
-	    	 tabla.refresh(rs);
+	    	 String sql=this.txtConsulta.getText().trim();
+	    	 String comp=String.valueOf(sql.charAt(0));
+	    	 if (comp.equals("S")|| comp.equals("s")) {
+	    		 ResultSet rs= stmt.executeQuery(sql);
+	    		 tabla.refresh(rs);
+	    	 }
+	    	 else {
+	    		 stmt.execute(sql);
+	    	 }
+	    	 
 	    	 
 	    	  // obtenemos el modelo de la tabla a partir de la consulta para 
 	    	  // modificar la forma en que se muestran de algunas columnas  
-	    	 // tabla.createColumnModelFromQuery();    	    
+	     	    
 	    	  for (int i = 0; i < tabla.getColumnCount(); i++)
 	    	  { // para que muestre correctamente los valores de tipo hora	   		  
 	    		 if	 (tabla.getColumn(i).getType()==Types.TIME)  
@@ -297,7 +297,7 @@ public class VentanaAdmin extends JFrame
 	    		 }
 	          }  
 	    	  // actualizamos el contenido de la tabla.   	     	  
-	    	 // tabla.refresh();
+	    	
 	  
 	          
 	    	  
@@ -355,8 +355,7 @@ public class VentanaAdmin extends JFrame
 		   {
 			
 		   String nombreTabla = rs.getString(4);
-		   
-		   System.out.println(nombreTabla);
+
 		    model.addElement(nombreTabla);
 		   
 		   }
