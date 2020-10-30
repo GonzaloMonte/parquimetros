@@ -34,14 +34,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 
 public class InterfazInspector extends JFrame {
-	private int legajo;
+	private String legajo;
 	private JPanel contentPane;
 	private JTextField patArea;
 	private DefaultListModel<String> listaPatentes;
 	private JList<String> list;
 	protected Connection conexionBD=null;
 	protected DBTable table;
-	
+	String calleSeleccionada;
+	String alturaSeleccionada;
+	String id="";
 
 	/**
 	 * Launch the application.
@@ -50,7 +52,7 @@ public class InterfazInspector extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					InterfazInspector frame = new InterfazInspector(1);
+					InterfazInspector frame = new InterfazInspector("1");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,7 +64,7 @@ public class InterfazInspector extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public InterfazInspector(int legajo) {
+	public InterfazInspector(String legajo) {
 		setTitle("Interfaz Inspector");
 		setResizable(false);
 		this.legajo=legajo;
@@ -88,9 +90,9 @@ public class InterfazInspector extends JFrame {
 		UbicacionesBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parquimetrosBox.removeAllItems();
-				String calleSeleccionada= Filtrarcalle(UbicacionesBox.getSelectedItem().toString());
+				calleSeleccionada= Filtrarcalle(UbicacionesBox.getSelectedItem().toString());
 				System.out.println(calleSeleccionada);
-				String alturaSeleccionada=Filtraraltura(UbicacionesBox.getSelectedItem().toString());	
+				alturaSeleccionada=Filtraraltura(UbicacionesBox.getSelectedItem().toString());	
 				System.out.println(alturaSeleccionada);
 				AgregarParquimetros(parquimetrosBox,calleSeleccionada,alturaSeleccionada);
 				parquimetrosBox.setSelectedItem(null);
@@ -143,6 +145,24 @@ public class InterfazInspector extends JFrame {
 		
 		
 		JButton btnGenerarmultas = new JButton("GenerarMultas");
+		btnGenerarmultas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+            	Calendar calendario = new GregorianCalendar();
+            	int horaActual, minutos, segundos,ainoActual,mesActual,diaActual;
+            	ainoActual = calendario.get(Calendar.YEAR);
+            	mesActual = calendario.get(Calendar.MONTH);
+            	diaActual = calendario.get(Calendar.DAY_OF_MONTH);
+            	horaActual =calendario.get(Calendar.HOUR_OF_DAY);
+            	minutos = calendario.get(Calendar.MINUTE);
+            	segundos = calendario.get(Calendar.SECOND);
+            	String fecha = ainoActual+"-"+mesActual+"-"+diaActual;
+            	String horario = horaActual+":"+minutos+":"+segundos;
+            	if(!checkUbicacion(legajo,calleSeleccionada,alturaSeleccionada,horaActual,minutos)) {
+    					JOptionPane.showMessageDialog(null, "Ubicacion no permitida en este horario","Mensaje Error", JOptionPane.WARNING_MESSAGE);
+                    }
+            	registrarAcceso(legajo,id,fecha,horario);
+			}
+		});
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
 		contentPane.add(btnGenerarmultas);
 		
@@ -167,7 +187,7 @@ public class InterfazInspector extends JFrame {
 		
 	}
 	
-	private void AgregarUbicaciones(JComboBox Box,int legajo) {
+	private void AgregarUbicaciones(JComboBox Box,String legajo) {
 		try {
 			Statement st= this.conexionBD.createStatement();
 			ResultSet rs= st.executeQuery("select calle,altura from asociado_con where legajo='"+legajo+"'");
@@ -189,6 +209,7 @@ public class InterfazInspector extends JFrame {
 			Statement st=this.conexionBD.createStatement();
 			ResultSet rs=st.executeQuery("select id_parq,numero,calle,altura from parquimetros where calle='"+calle+"' AND altura='"+numero+"'");
 			while (rs.next()) {
+				id=rs.getString("id_parq");
 				String id= "ID:"+rs.getString("id_parq");
 				String num= "num:" + rs.getString("numero");
 				String callea= "calle:"+ rs.getString("calle");
@@ -285,6 +306,7 @@ public class InterfazInspector extends JFrame {
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }      
 	   }
+	   
 	   public boolean checkUbicacion(String legajo,String calle,String altura,int hora,int minutos) {
 			boolean pertenece = false;
 			Calendar calendario = new GregorianCalendar();
@@ -309,4 +331,13 @@ public class InterfazInspector extends JFrame {
 			
 			return pertenece;
 		}
+	   public void registrarAcceso(String legajoInsp, String id_parq, String fecha, String horario) {
+			try {
+				conexionBD.createStatement().execute("INSERT INTO accede VALUES("+legajoInsp+","+id_parq+","+fecha+","+horario+");");
+			} catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+		            System.out.println("SQLState: " + ex.getSQLState());
+		            System.out.println("VendorError: " + ex.getErrorCode());
+			}
+}
 }
