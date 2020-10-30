@@ -17,6 +17,7 @@ public class InicioSesion extends JFrame {
 
 	private JPanel contentPane;
 	private  VentanaAdmin ventanaAdmin;
+	private Gui_LoginInspector ventanaInspector;
 	/**
 	 * Launch the application.
 	 */
@@ -60,6 +61,13 @@ public class InicioSesion extends JFrame {
 		
 		JButton btnInspector = new JButton("Inspector");
 		btnInspector.setBounds(291, 175, 118, 44);
+		btnInspector.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ventanaInspector=new Gui_LoginInspector();
+				cerrarVentana();
+				ventanaInspector.setVisible(true);
+			}
+		});
 		contentPane.add(btnInspector);
 	}
 	private void cerrarVentana() {

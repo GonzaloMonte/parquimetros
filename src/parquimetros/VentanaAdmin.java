@@ -51,6 +51,8 @@ public class VentanaAdmin extends JFrame
 	   private JButton ejecutarBot;
 	   private DBTable tabla;    
 	   private JScrollPane scrConsulta;
+	   private JScrollPane scrListaTablas;
+	   private JScrollPane scrListaAtributos;
 	   private JList<String> lTablas;
 	   private JList<String>  lAtributos;
 	   private String tablaElegida;
@@ -75,6 +77,7 @@ public class VentanaAdmin extends JFrame
 				}
 			});
 		}
+		// inicia la GUI de iniciar session
 	   private void iniGUIsesion() {
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setBounds(100, 100, 450, 300);
@@ -111,6 +114,7 @@ public class VentanaAdmin extends JFrame
 			 getContentPane().add(pnlEntrada);
 		}
 	   
+	   //inicia toda la GUI del administrador
 	   private void initGUI() 
 	   {
 	      try {
@@ -129,7 +133,7 @@ public class VentanaAdmin extends JFrame
 	         lTablas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	         
 	         DefaultListModel<String> modelA = new DefaultListModel<>();
-	         modelA.addElement("lista Vacia");
+	         modelA.addElement("");
 	         lAtributos=new JList<String>(modelA);
 			 lAtributos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	         
@@ -180,7 +184,7 @@ public class VentanaAdmin extends JFrame
 	            	botonBorrar.setText("Borrar");            
 	            	botonBorrar.addActionListener(new ActionListener() {
 	            		public void actionPerformed(ActionEvent arg0) {
-	            		  txtConsulta.setText("");            			
+	            		  txtConsulta.setText("");
 	            		}
 	            	});
 	            }	
@@ -195,8 +199,12 @@ public class VentanaAdmin extends JFrame
 	                      
 	           // setea la tabla para sólo lectura (no se puede editar su contenido)  
 	           tabla.setEditable(false);
-	           pnlListas.add(lTablas);
-	           pnlListas.add(lAtributos);
+	           scrListaTablas=new JScrollPane();
+	           scrListaAtributos=new JScrollPane();
+	           scrListaTablas.setViewportView(lTablas);
+	           scrListaAtributos.setViewportView(lAtributos);
+	           pnlListas.add(scrListaTablas);
+	           pnlListas.add(scrListaAtributos);
 	   
 	           pnlListas.setVisible(true);
 	           getContentPane().add(pnlListas, BorderLayout.SOUTH);     
@@ -222,7 +230,7 @@ public class VentanaAdmin extends JFrame
 	   {
 	         try
 	         {
-	            String driver ="com.mysql.cj.jdbc.Driver";
+	            
 	        	String servidor = "localhost:3306";
 	        	String baseDatos = "parquimetros"; 
 	        	String usuario = "admin";
@@ -271,17 +279,18 @@ public class VentanaAdmin extends JFrame
 	      {    
 	    	 Statement stmt = this.conexionBD.createStatement();
 	    	 String sql=this.txtConsulta.getText().trim();
+	    	 if (!sql.isEmpty()) {
 	    	 String comp=String.valueOf(sql.charAt(0));
-	    	 if (comp.equals("S")|| comp.equals("s")) {
-	    		 ResultSet rs= stmt.executeQuery(sql);
-	    		 tabla.refresh(rs);
-	    	 }
-	    	 else {
-	    		 stmt.execute(sql);
+	    	 	if (comp.equals("S")|| comp.equals("s")) {
+	    	 		ResultSet rs= stmt.executeQuery(sql);
+	    	 		tabla.refresh(rs);
+	    	 		}
+	    	 	else {
+	    	 		stmt.execute(sql);
+	    	 	}
 	    	 }
 	    	 
-	    	 
-	    	  // obtenemos el modelo de la tabla a partir de la consulta para 
+	
 	    	  // modificar la forma en que se muestran de algunas columnas  
 	     	    
 	    	  for (int i = 0; i < tabla.getColumnCount(); i++)
@@ -296,9 +305,9 @@ public class VentanaAdmin extends JFrame
 	    		    tabla.getColumn(i).setDateFormat("dd/MM/YYYY");
 	    		 }
 	          }  
-	    	  // actualizamos el contenido de la tabla.   	     	  
-	    	
-	  
+	       	  
+	    	desconectarBD();
+	    	  
 	          
 	    	  
 	    	  
@@ -317,6 +326,7 @@ public class VentanaAdmin extends JFrame
 	      }
 	      
 	   }
+	   //devuelve una lista con todas las tablas que hay en la BD
 	   private DefaultListModel<String> llenarTabla() {
 		   try
 		   {
