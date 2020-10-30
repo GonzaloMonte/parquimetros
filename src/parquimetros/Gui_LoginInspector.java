@@ -33,6 +33,7 @@ public class Gui_LoginInspector extends JFrame {
 	private String legajo;
 	private String password;
 	protected Connection conexionBD=null;
+	protected InterfazInspector nuevaGUI;
 
 	/**
 	 * Launch the application.
@@ -87,8 +88,9 @@ public class Gui_LoginInspector extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
 				if (checkInspector(Legajotext.getText(),String.valueOf(LegajoPass.getPassword()))) {
-					//ACTIVAR INTERFAZ INSPECTOR
-					
+					nuevaGUI=new InterfazInspector(legajo);
+                    cerrarVentana();
+                    nuevaGUI.setVisible(true);
 				}else
 				JOptionPane.showMessageDialog(getContentPane(), "Legajo o contraseña incorrectos", "ERROR",
 							JOptionPane.WARNING_MESSAGE);
@@ -195,6 +197,9 @@ public class Gui_LoginInspector extends JFrame {
 		}
 		return salida;
 	}
+	private void cerrarVentana() {
+        this.dispose();
+    }
 }
 	
 	
