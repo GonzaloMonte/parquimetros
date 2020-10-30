@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 import java.awt.List;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.AbstractListModel;
 import java.awt.Color;
 import javax.swing.JScrollBar;
@@ -48,11 +49,11 @@ public class InterfazInspector extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					InterfazInspector frame = new InterfazInspector("1");
+					InterfazInspector frame = new InterfazInspector("1",);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -60,11 +61,12 @@ public class InterfazInspector extends JFrame {
 			}
 		});
 	}
-
+*/
 	/**
 	 * Create the frame.
 	 */
-	public InterfazInspector(String legajo) {
+	public InterfazInspector(String legajo,Connection conexion) {
+		this.conexionBD=conexion;
 		setTitle("Interfaz Inspector");
 		setResizable(false);
 		this.legajo=legajo;
@@ -86,14 +88,11 @@ public class InterfazInspector extends JFrame {
 		contentPane.add(btnAgregarPatente);
 		//ESTE COMBO BOX TENDRA LAS UBICACIONES QUE TIENE ACCESO SEGUN LEGAJO.
 		JComboBox UbicacionesBox = new JComboBox();
-		conectarBD();
 		UbicacionesBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parquimetrosBox.removeAllItems();
 				calleSeleccionada= Filtrarcalle(UbicacionesBox.getSelectedItem().toString());
-				System.out.println(calleSeleccionada);
 				alturaSeleccionada=Filtraraltura(UbicacionesBox.getSelectedItem().toString());	
-				System.out.println(alturaSeleccionada);
 				AgregarParquimetros(parquimetrosBox,calleSeleccionada,alturaSeleccionada);
 				parquimetrosBox.setSelectedItem(null);
 			}
@@ -150,7 +149,7 @@ public class InterfazInspector extends JFrame {
             	Calendar calendario = new GregorianCalendar();
             	int horaActual, minutos, segundos,ainoActual,mesActual,diaActual;
             	ainoActual = calendario.get(Calendar.YEAR);
-            	mesActual = calendario.get(Calendar.MONTH);
+            	mesActual = calendario.get(Calendar.MONTH)+1;
             	diaActual = calendario.get(Calendar.DAY_OF_MONTH);
             	horaActual =calendario.get(Calendar.HOUR_OF_DAY);
             	minutos = calendario.get(Calendar.MINUTE);
@@ -161,6 +160,9 @@ public class InterfazInspector extends JFrame {
     					JOptionPane.showMessageDialog(null, "Ubicacion no permitida en este horario","Mensaje Error", JOptionPane.WARNING_MESSAGE);
                     }
             	registrarAcceso(legajo,id,fecha,horario);
+            	DefaultListModel<String> patentesMultadas=new DefaultListModel<String>();
+            	patentesMultadas=EncontrarMultados(patentesMultadas,fecha,horario);
+            	
 			}
 		});
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
@@ -260,7 +262,7 @@ public class InterfazInspector extends JFrame {
         return numero;
     }
 
-	private void conectarBD()
+/*	private void conectarBD()
 	   {
 	         try
 	         {
@@ -306,21 +308,21 @@ public class InterfazInspector extends JFrame {
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }      
 	   }
-	   
+	   */
 	   public boolean checkUbicacion(String legajo,String calle,String altura,int hora,int minutos) {
 			boolean pertenece = false;
 			Calendar calendario = new GregorianCalendar();
 			String turno="";
-			String [] semana = {"do","lu","ma","mi","ju","vi","sa"};
+			String [] semana = {"'do'","'lu'","'ma'","'mi'","'ju'","'vi'","'sa'"};
 			String dia=semana[calendario.get(Calendar.DAY_OF_WEEK)-1];
 			if(hora>7 && hora<14) {
-				turno ="m";
+				turno ="'m'";
 			}
 			if(hora>=14 && (hora<20 || (hora==20 && minutos==00))) {
-				turno ="t";
+				turno ="'t'";
 			}
 			try {
-				ResultSet rs = conexionBD.createStatement().executeQuery("SELECT legajo FROM asociado_con where turno ="+turno+" AND dia="+dia+" AND calle="+calle+" AND altura="+altura+" AND legajo="+legajo+";");
+				ResultSet rs = conexionBD.createStatement().executeQuery("SELECT legajo FROM asociado_con where turno ="+turno+" AND dia="+dia+" AND calle='"+calle+"' AND altura="+altura+" AND legajo="+legajo+";");
 				if (rs.next())
 					pertenece=true;
 			} catch (SQLException ex) {
@@ -333,11 +335,42 @@ public class InterfazInspector extends JFrame {
 		}
 	   public void registrarAcceso(String legajoInsp, String id_parq, String fecha, String horario) {
 			try {
-				conexionBD.createStatement().execute("INSERT INTO accede VALUES("+legajoInsp+","+id_parq+","+fecha+","+horario+");");
+				conexionBD.createStatement().execute("INSERT INTO accede VALUES("+legajoInsp+","+id_parq+",'"+fecha+"','"+horario+"');");
 			} catch (SQLException ex) {
 				   System.out.println("SQLException: " + ex.getMessage());
 		            System.out.println("SQLState: " + ex.getSQLState());
 		            System.out.println("VendorError: " + ex.getErrorCode());
 			}
 }
+	   public DefaultListModel<String> EncontrarMultados(DefaultListModel<String> lista,String fecha, String horario) {
+		   DefaultListModel<String> multados= new DefaultListModel<String>();
+		   String id_asociado="";
+		   Connection c=this.conexionBD;
+		   ListModel<String> aux=list.getModel();
+		   try {
+		   Statement s=c.createStatement();
+		   for(int i=0 ; i<aux.getSize() ; i++) {
+			   boolean encontro=false;
+			   ResultSet rs=s.executeQuery("select patente from estacionados where patente='"+aux.getElementAt(i)+"'");
+			   if(rs.next()) {
+			   }
+			   else {
+				   ResultSet rs2=s.executeQuery("select id_asociado from asociado_con where legajo='"+legajo+"'");
+				   if(rs2.next()) {
+					   id_asociado=rs2.getString(id_asociado);
+				   }			
+				   multados.addElement((String) aux.getElementAt(i));
+				   s.execute("INSERT INTO multa(fecha,hora,patente,id_asociado_con) VALUE ('"+fecha+"','"+horario+"','"+aux.getElementAt(i)+"','"+id_asociado+"'");
+			   }		  		   
+		   	}
+		   
+		   return multados;
+		   
+		   }catch(SQLException e1) {
+			   System.out.println("SQLException: "+ e1.getMessage());
+			   System.out.println("SQLSTate: "+ e1.getSQLState());
+			   System.out.println("VendorError: "+e1.getErrorCode());
+			   return null;
+		   }
+	   }
 }

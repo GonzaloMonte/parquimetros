@@ -88,7 +88,7 @@ public class Gui_LoginInspector extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
 				if (checkInspector(Legajotext.getText(),String.valueOf(LegajoPass.getPassword()))) {
-					nuevaGUI=new InterfazInspector(legajo);
+					nuevaGUI=new InterfazInspector(Legajotext.getText(),conexionBD);
                     cerrarVentana();
                     nuevaGUI.setVisible(true);
 				}else
