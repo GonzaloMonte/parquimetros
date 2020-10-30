@@ -20,6 +20,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
@@ -283,4 +285,28 @@ public class InterfazInspector extends JFrame {
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }      
 	   }
+	   public boolean checkUbicacion(String legajo,String calle,String altura,int hora,int minutos) {
+			boolean pertenece = false;
+			Calendar calendario = new GregorianCalendar();
+			String turno="";
+			String [] semana = {"do","lu","ma","mi","ju","vi","sa"};
+			String dia=semana[calendario.get(Calendar.DAY_OF_WEEK)-1];
+			if(hora>7 && hora<14) {
+				turno ="m";
+			}
+			if(hora>=14 && (hora<20 || (hora==20 && minutos==00))) {
+				turno ="t";
+			}
+			try {
+				ResultSet rs = conexionBD.createStatement().executeQuery("SELECT legajo FROM asociado_con where turno ="+turno+" AND dia="+dia+" AND calle="+calle+" AND altura="+altura+" AND legajo="+legajo+";");
+				if (rs.next())
+					pertenece=true;
+			} catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+		            System.out.println("SQLState: " + ex.getSQLState());
+		            System.out.println("VendorError: " + ex.getErrorCode());
+			}
+			
+			return pertenece;
+		}
 }
