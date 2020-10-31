@@ -34,26 +34,8 @@ public class Gui_LoginInspector extends JFrame {
 	private String password;
 	protected Connection conexionBD=null;
 	protected InterfazInspector nuevaGUI;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Gui_LoginInspector frame = new Gui_LoginInspector();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
+	
+	
 	public Gui_LoginInspector() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -147,40 +129,9 @@ public class Gui_LoginInspector extends JFrame {
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }      
 	   }
-/*
-	private void conectarBDinsp()
-	   {
-	         try
-	         {
-	            String driver ="com.mysql.cj.jdbc.Driver";
-	        	String servidor = "localhost:3306";
-	        	String baseDatos = "parquimetros"; 
-	        	String usuario = "inspector";
-	        	String clave = "inspector" ;
-	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
-	        	                     baseDatos +"?serverTimezone=America/Argentina/Buenos_Aires";
-	     
-	            table.connectDatabase(driver, uriConexion, usuario, clave);
-	           
-	         }catch (SQLException ex)
-	         {
-	             JOptionPane.showMessageDialog(this,
-	                            "Se produjo un error al intentar conectarse a la base de datos.\n" 
-	                             + ex.getMessage(),
-	                             "Error",
-	                             JOptionPane.ERROR_MESSAGE);
-	             System.out.println("SQLException: " + ex.getMessage());
-	             System.out.println("SQLState: " + ex.getSQLState());
-	             System.out.println("VendorError: " + ex.getErrorCode());
-	          }
-	          catch (ClassNotFoundException e)
-	          {
-	             e.printStackTrace();
-	          }
-	   }
+
 	
 	//chequea que el inspector este en la tabla de usuarios para activar su interfaz
-*/	
 	private boolean checkInspector(String user, String pw) {
 		boolean salida = true;
 		try {

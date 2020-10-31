@@ -65,18 +65,6 @@ public class VentanaAdmin extends JFrame
 
 	      
 	   }
-		public static void main(String[] args) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						VentanaAdmin frame = new VentanaAdmin();
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		}
 		// inicia la GUI de iniciar session
 	   private void iniGUIsesion() {
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

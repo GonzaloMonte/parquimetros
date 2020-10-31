@@ -49,32 +49,14 @@ public class InterfazInspector extends JFrame {
 	String alturaSeleccionada;
 	String id="";
 
-	/**
-	 * Launch the application.
-	 */
-/*	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					InterfazInspector frame = new InterfazInspector("1",);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-*/
-	/**
-	 * Create the frame.
-	 */
+
 	public InterfazInspector(String legajo,Connection conexion) {
 		this.conexionBD=conexion;
 		setTitle("Interfaz Inspector");
-		setResizable(false);
+		setResizable(true);
 		this.legajo=legajo;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 1200, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -127,6 +109,8 @@ public class InterfazInspector extends JFrame {
 		tabla = new DBTable();
 		tabla.setEditable(false);
 		contentPane.add(tabla);
+		tabla.setVisible(true);
+		tabla.setBounds(458,5,587,331);
 		
 		JList JListPatente= new JList();
 		scroll.setViewportView(JListPatente);
@@ -166,11 +150,15 @@ public class InterfazInspector extends JFrame {
             	if(!checkUbicacion(legajo,calleSeleccionada,alturaSeleccionada,horaActual,minutos)) {
     					JOptionPane.showMessageDialog(null, "Ubicacion no permitida en este horario","Mensaje Error", JOptionPane.WARNING_MESSAGE);
                     }
+            	else {
             	registrarAcceso(legajo,id,fecha,horario);
             	DefaultListModel<String> patentesMultadas=new DefaultListModel<String>();
-            	patentesMultadas=EncontrarMultados(patentesMultadas,fecha,horario);
-            	generarTabla(fecha,horario);
-            	tabla.setVisible(true);
+            	if(listaPatentes.isEmpty()) {
+            		JOptionPane.showMessageDialog(null, "NO HAY PATENTES CARGADAS","Mensaje Error", JOptionPane.WARNING_MESSAGE);
+                }
+            	patentesMultadas=EncontrarMultados(listaPatentes,fecha,horario);
+            	generarTabla(fecha,horario);  
+            	}
 			}
 		});
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
@@ -270,57 +258,11 @@ public class InterfazInspector extends JFrame {
         return numero;
     }
 
-/*	private void conectarBD()
-	   {
-	         try
-	         {
-	            String driver ="com.mysql.cj.jdbc.Driver";
-	        	String servidor = "localhost:3306";
-	        	String baseDatos = "parquimetros"; 
-	        	String usuario = "inspector";
-	        	String clave = "inspector";
-	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
-	        	                     baseDatos +"?serverTimezone=America/Argentina/Buenos_Aires";
-	            
-	            
-	       //establece una conexión con la  B.D. "parquimetros"  usando directamante una tabla DBTable    
-	           
-	            this.conexionBD = DriverManager.getConnection(uriConexion, usuario, clave);
-	           
-	         }
-	         catch (SQLException ex)
-	         {
-	            JOptionPane.showMessageDialog(this,
-	                           "Se produjo un error al intentar conectarse a la base de datos.\n" 
-	                            + ex.getMessage(),
-	                            "Error",
-	                            JOptionPane.ERROR_MESSAGE);
-	            System.out.println("SQLException: " + ex.getMessage());
-	            System.out.println("SQLState: " + ex.getSQLState());
-	            System.out.println("VendorError: " + ex.getErrorCode());
-	         }
-	       
-	      
-	   }
 
-	   private void desconectarBD()
-	   {
-	         try
-	         {
-	            table.close();            
-	         }
-	         catch (SQLException ex)
-	         {
-	            System.out.println("SQLException: " + ex.getMessage());
-	            System.out.println("SQLState: " + ex.getSQLState());
-	            System.out.println("VendorError: " + ex.getErrorCode());
-	         }      
-	   }
-	   */
 	   public boolean checkUbicacion(String legajo,String calle,String altura,int hora,int minutos) {
 			boolean pertenece = false;
 			Calendar calendario = new GregorianCalendar();
-			String turno="";
+			String turno="''";
 			String [] semana = {"'do'","'lu'","'ma'","'mi'","'ju'","'vi'","'sa'"};
 			String dia=semana[calendario.get(Calendar.DAY_OF_WEEK)-1];
 			if(hora>7 && hora<14) {
@@ -330,7 +272,7 @@ public class InterfazInspector extends JFrame {
 				turno ="'t'";
 			}
 			try {
-				ResultSet rs = conexionBD.createStatement().executeQuery("SELECT legajo FROM asociado_con where turno ="+turno+" AND dia="+dia+" AND calle='"+calle+"' AND altura="+altura+" AND legajo="+legajo+";");
+				ResultSet rs = conexionBD.createStatement().executeQuery("SELECT legajo FROM asociado_con where turno="+turno+" AND dia="+dia+" AND calle='"+calle+"' AND altura="+altura+" AND legajo="+legajo+";");
 				if (rs.next())
 					pertenece=true;
 			} catch (SQLException ex) {
@@ -354,21 +296,23 @@ public class InterfazInspector extends JFrame {
 		   DefaultListModel<String> multados= new DefaultListModel<String>();
 		   String id_asociado="";
 		   Connection c=this.conexionBD;
-		   ListModel<String> aux=list.getModel();
+		   ListModel<String> aux=lista;
 		   try {
 		   Statement s=c.createStatement();
 		   for(int i=0 ; i<aux.getSize() ; i++) {
 			   boolean encontro=false;
-			   ResultSet rs=s.executeQuery("select patente from estacionados where patente='"+aux.getElementAt(i)+"'");
+			   ResultSet rs=s.executeQuery("select patente from estacionados where patente='"+aux.getElementAt(i)+"';");
 			   if(rs.next()) {
+
 			   }
 			   else {
-				   ResultSet rs2=s.executeQuery("select id_asociado from asociado_con where legajo='"+legajo+"'");
+
+				   ResultSet rs2=s.executeQuery("select id_asociado_con from asociado_con where legajo="+legajo+";");
 				   if(rs2.next()) {
-					   id_asociado=rs2.getString(id_asociado);
+					   id_asociado=rs2.getString("id_asociado_con");
 				   }			
 				   multados.addElement((String) aux.getElementAt(i));
-				   s.execute("INSERT INTO multa(fecha,hora,patente,id_asociado_con) VALUE ('"+fecha+"','"+horario+"','"+aux.getElementAt(i)+"','"+id_asociado+"'");
+				   s.execute("insert into multa(fecha,hora,patente,id_asociado_con) VALUE ('"+fecha+"','"+horario+"','"+aux.getElementAt(i)+"','"+id_asociado+"');");
 			   }		  		   
 		   	}
 		   
@@ -384,6 +328,7 @@ public class InterfazInspector extends JFrame {
 	   public void generarTabla(String fecha,String hora) {
 		   try {
 		   Statement stmt = this.conexionBD.createStatement();
+		  
 	    	 String sql="select numero,fecha,hora,patente,calle,altura,legajo from multa natural join asociado_con where fecha='"+fecha+"' AND hora='"+hora+"'";
 	    	 ResultSet rs= stmt.executeQuery(sql);
  	 		tabla.refresh(rs);
