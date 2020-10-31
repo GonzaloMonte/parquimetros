@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.List;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.AbstractListModel;
 import java.awt.Color;
 import javax.swing.JScrollBar;
@@ -42,6 +44,7 @@ public class InterfazInspector extends JFrame {
 	private JList<String> list;
 	protected Connection conexionBD=null;
 	protected DBTable table;
+	private DBTable tabla;    
 	String calleSeleccionada;
 	String alturaSeleccionada;
 	String id="";
@@ -121,6 +124,10 @@ public class InterfazInspector extends JFrame {
 		scroll.setBounds(62, 5, 81, 187);
 		panel.add(scroll);
 		
+		tabla = new DBTable();
+		tabla.setEditable(false);
+		contentPane.add(tabla);
+		
 		JList JListPatente= new JList();
 		scroll.setViewportView(JListPatente);
 		JListPatente.setModel(new AbstractListModel() {
@@ -162,7 +169,8 @@ public class InterfazInspector extends JFrame {
             	registrarAcceso(legajo,id,fecha,horario);
             	DefaultListModel<String> patentesMultadas=new DefaultListModel<String>();
             	patentesMultadas=EncontrarMultados(patentesMultadas,fecha,horario);
-            	
+            	generarTabla(fecha,horario);
+            	tabla.setVisible(true);
 			}
 		});
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
@@ -372,5 +380,37 @@ public class InterfazInspector extends JFrame {
 			   System.out.println("VendorError: "+e1.getErrorCode());
 			   return null;
 		   }
+	   }
+	   public void generarTabla(String fecha,String hora) {
+		   try {
+		   Statement stmt = this.conexionBD.createStatement();
+	    	 String sql="select numero,fecha,hora,patente,calle,altura,legajo from multa natural join asociado_con where fecha='"+fecha+"' AND hora='"+hora+"'";
+	    	 ResultSet rs= stmt.executeQuery(sql);
+ 	 		tabla.refresh(rs);
+ 	 		 for (int i = 0; i < tabla.getColumnCount(); i++)
+	    	  { // para que muestre correctamente los valores de tipo hora	   		  
+	    		 if	 (tabla.getColumn(i).getType()==Types.TIME)  
+	    		 {    		 
+	    		    tabla.getColumn(i).setType(Types.CHAR);  
+	  	       	 }
+	    	
+	    		 if	 (tabla.getColumn(i).getType()==Types.DATE)
+	    		 {
+	    		    tabla.getColumn(i).setDateFormat("dd/MM/YYYY");
+	    		 }
+	          }
+		   }
+		     catch (SQLException ex)
+		      {
+		         // se muestra porque ocurre el error
+		         System.out.println("SQLException: " + ex.getMessage());
+		         System.out.println("SQLState: " + ex.getSQLState());
+		         System.out.println("VendorError: " + ex.getErrorCode());
+		         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
+		                                       ex.getMessage() + "\n", 
+		                                       "Error al ejecutar la consulta.",
+		                                       JOptionPane.ERROR_MESSAGE);
+		         
+		      }
 	   }
 }
