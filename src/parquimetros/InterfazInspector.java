@@ -166,6 +166,14 @@ public class InterfazInspector extends JFrame {
 		
 		JButton btnVolver = new JButton("Volver ");
 		btnVolver.setBounds(271, 299, 89, 23);
+		
+		btnVolver.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				Gui_LoginInspector nueva=new Gui_LoginInspector();
+				cerrarVentana();
+				nueva.setVisible(true);
+			}
+		});
 		contentPane.add(btnVolver);
 		
 		
@@ -362,4 +370,7 @@ public class InterfazInspector extends JFrame {
 		         
 		      }
 	   }
+	   private void cerrarVentana() {
+			this.dispose();
+		}
 }

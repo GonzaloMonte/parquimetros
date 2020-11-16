@@ -85,6 +85,13 @@ public class Gui_LoginInspector extends JFrame {
 		
 		JButton btnVolver = new JButton("Volver");
 		btnVolver.setBounds(283, 202, 103, 23);
+		btnVolver.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				InicioSesion nueva=new InicioSesion();
+				cerrarVentana();
+				nueva.setVisible(true);
+			}
+		});
 		contentPane.add(btnVolver);
 }
 	private void conectarBD()

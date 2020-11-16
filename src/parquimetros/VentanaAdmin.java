@@ -49,6 +49,7 @@ public class VentanaAdmin extends JFrame
 	   private JTextArea txtConsulta;
 	   private JButton botonBorrar;
 	   private JButton ejecutarBot;
+	   private JButton volver;
 	   private DBTable tabla;    
 	   private JScrollPane scrConsulta;
 	   private JScrollPane scrListaTablas;
@@ -57,6 +58,7 @@ public class VentanaAdmin extends JFrame
 	   private JList<String>  lAtributos;
 	   private String tablaElegida;
 	   protected Connection conexionBD = null;
+	   
 	   
 	   public VentanaAdmin() 
 	   {
@@ -68,11 +70,11 @@ public class VentanaAdmin extends JFrame
 		// inicia la GUI de iniciar session
 	   private void iniGUIsesion() {
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			setBounds(100, 100, 450, 300);
+			setBounds(100, 100, 550, 400);
 			pnlEntrada = new JPanel();
 			pnlEntrada.setBorder(new EmptyBorder(5, 5, 5, 5));
 			pnlEntrada.setLayout(null);
-		
+			
 			pnlListas=new JPanel();
 			pnlListas.setLayout(new GridLayout(1,2));
 			JLabel TituloLabel = new JLabel("Introdusca contraseña del administrador :");
@@ -96,9 +98,21 @@ public class VentanaAdmin extends JFrame
 				
 			});
 			ingresoContraseña.setBounds(100, 175, 200, 44);
-		
+			
 			pnlEntrada.add(ingresoContraseña);
 			pnlEntrada.setVisible(true);
+			JButton btnVolver = new JButton("Volver ");
+			btnVolver.setBounds(271, 299, 89, 23);
+			
+			btnVolver.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					InicioSesion nueva=new InicioSesion();
+					cerrarVentana();
+					nueva.setVisible(true);
+				}
+			});
+			pnlEntrada.add(btnVolver);
+			
 			 getContentPane().add(pnlEntrada);
 		}
 	   
@@ -124,7 +138,7 @@ public class VentanaAdmin extends JFrame
 	         modelA.addElement("");
 	         lAtributos=new JList<String>(modelA);
 			 lAtributos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	         
+		
 	         lTablas.addListSelectionListener(new ListSelectionListener() { 
 	         
 	        	       
@@ -175,7 +189,16 @@ public class VentanaAdmin extends JFrame
 	            		  txtConsulta.setText("");
 	            		}
 	            	});
-	            }	
+	            }
+	       	 	volver = new JButton("Volver ");				
+				volver.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						VentanaAdmin nueva=new VentanaAdmin();
+						cerrarVentana();
+						nueva.setVisible(true);
+					}
+				});
+				pnlConsulta.add(volver);
 	         }
 	         {
 	        	// crea la tabla  
@@ -367,4 +390,7 @@ public class VentanaAdmin extends JFrame
 			  ex.getStackTrace();
 		   } 
 	   }
+	   private void cerrarVentana() {
+			this.dispose();
+		}
 	}
