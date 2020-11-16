@@ -164,6 +164,10 @@ public class InterfazInspector extends JFrame {
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
 		contentPane.add(btnGenerarmultas);
 		
+		JButton btnVolver = new JButton("Volver ");
+		btnVolver.setBounds(271, 299, 89, 23);
+		contentPane.add(btnVolver);
+		
 		
 		btnAgregarPatente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

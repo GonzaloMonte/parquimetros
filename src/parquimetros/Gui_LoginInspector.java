@@ -80,8 +80,12 @@ public class Gui_LoginInspector extends JFrame {
 				
 			}
 		});
-		btnIniciarSesion.setBounds(283, 158, 103, 23);
+		btnIniciarSesion.setBounds(283, 120, 103, 23);
 		contentPane.add(btnIniciarSesion);
+		
+		JButton btnVolver = new JButton("Volver");
+		btnVolver.setBounds(283, 202, 103, 23);
+		contentPane.add(btnVolver);
 }
 	private void conectarBD()
 	   {
