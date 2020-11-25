@@ -120,8 +120,8 @@ public class VentanaAdmin extends JFrame
 	   private void initGUI() 
 	   {
 	      try {
-	         setPreferredSize(new Dimension(800, 600));
-	         this.setBounds(0, 0, 800, 600);
+	         setPreferredSize(new Dimension(900, 600));
+	         this.setBounds(0, 0, 900, 600);
 	         setVisible(true);
 	         BorderLayout thisLayout = new BorderLayout();
 	         this.setTitle("Consultas ");
