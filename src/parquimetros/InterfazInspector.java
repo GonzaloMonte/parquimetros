@@ -159,6 +159,9 @@ public class InterfazInspector extends JFrame {
             	patentesMultadas=EncontrarMultados(listaPatentes,fecha,horario);
             	generarTabla(fecha,horario);  
             	}
+            	listaPatentes.clear();
+            	JListPatente.removeAll();
+            
 			}
 		});
 		btnGenerarmultas.setBounds(238, 226, 137, 34);
@@ -179,7 +182,7 @@ public class InterfazInspector extends JFrame {
 		
 		btnAgregarPatente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if ((patArea.getText().length()==6)) {
+				if (chequearPatente(patArea.getText())) {
 				listaPatentes.addElement(patArea.getText());
 				patArea.setText("");
 				JListPatente.setModel(listaPatentes);
@@ -373,4 +376,15 @@ public class InterfazInspector extends JFrame {
 	   private void cerrarVentana() {
 			this.dispose();
 		}
+	   
+	   private boolean chequearPatente(String a){
+			Boolean esValida=false;
+			Pattern p = Pattern.compile("[a-zA-Z]{3}[0-9]{3}");//formato de la patente
+			Matcher m=p.matcher(a);
+			if(m.matches()){
+			esValida=true;
+			}
+			return esValida;
+		}
+
 }
