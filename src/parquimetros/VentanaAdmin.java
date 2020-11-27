@@ -205,6 +205,7 @@ public class VentanaAdmin extends JFrame
 	        	tabla = new DBTable();
 	        	
 	        	
+	        	
 	        	// Agrega la tabla al frame (no necesita JScrollPane como Jtable)
 	            getContentPane().add(tabla, BorderLayout.CENTER);           
 	                      

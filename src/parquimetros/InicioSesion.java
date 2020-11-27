@@ -18,6 +18,7 @@ public class InicioSesion extends JFrame {
 	private JPanel contentPane;
 	private  VentanaAdmin ventanaAdmin;
 	private Gui_LoginInspector ventanaInspector;
+	private Gui_LoginParquimetro ventanaParquimetro;
 	
 	
 	public static void main(String[] args) {
@@ -39,7 +40,7 @@ public class InicioSesion extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		this.add(contentPane);
+		getContentPane().add(contentPane);
 		contentPane.setLayout(null);
 		JLabel TituloLabel = new JLabel("Seleccione Usuario");
 		TituloLabel.setBounds(178, 60, 118, 32);
@@ -53,11 +54,11 @@ public class InicioSesion extends JFrame {
 				ventanaAdmin.setVisible(true);
 			}
 		});
-		btnAdmin.setBounds(56, 175, 129, 44);
+		btnAdmin.setBounds(54, 112, 129, 44);
 		contentPane.add(btnAdmin);
 		
 		JButton btnInspector = new JButton("Inspector");
-		btnInspector.setBounds(291, 175, 118, 44);
+		btnInspector.setBounds(54, 181, 129, 44);
 		btnInspector.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ventanaInspector=new Gui_LoginInspector();
@@ -66,6 +67,17 @@ public class InicioSesion extends JFrame {
 			}
 		});
 		contentPane.add(btnInspector);
+		
+		JButton btnParquimetro = new JButton("Parquimetro");
+		btnParquimetro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ventanaParquimetro=new Gui_LoginParquimetro();
+				cerrarVentana();
+				ventanaInspector.setVisible(true);
+			}
+		});
+		btnParquimetro.setBounds(251, 112, 129, 44);
+		contentPane.add(btnParquimetro);
 	}
 	private void cerrarVentana() {
 		this.dispose();

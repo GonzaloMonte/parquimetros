@@ -87,7 +87,6 @@ public class Gui_LoginInspector extends JFrame {
 		btnVolver.setBounds(283, 202, 103, 23);
 		btnVolver.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("asjdksadj");
 				InicioSesion nueva=new InicioSesion();
 				cerrarVentana();
 				nueva.setVisible(true);
