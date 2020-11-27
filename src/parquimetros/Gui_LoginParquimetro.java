@@ -7,36 +7,34 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+
+
 import quick.dbtable.DBTable;
 
+import javax.swing.JPasswordField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.Box;
-import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
+import javax.swing.SwingConstants;
 
-public class Gui_LoginInspector extends JFrame {
+public class Gui_LoginParquimetro extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField Legajotext;
-	private JPasswordField LegajoPass;
+	private JPasswordField pwdPass;
 	public DBTable table; // Es la tabla que usaremos para la conexion a la BD
-	private String legajo;
-	private String password;
+	private VentanaParquimetros nuevaGUI;
 	protected Connection conexionBD=null;
-	protected InterfazInspector nuevaGUI;
+
 	
 	
-	public Gui_LoginInspector() {
+	public Gui_LoginParquimetro() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -44,57 +42,48 @@ public class Gui_LoginInspector extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblIngreseLegajo = new JLabel("Ingrese legajo");
-		lblIngreseLegajo.setBounds(56, 96, 192, 14);
-		contentPane.add(lblIngreseLegajo);
+		pwdPass = new JPasswordField();
+		pwdPass.setEditable(false);
+		pwdPass.setBounds(42, 153, 236, 20);
+		contentPane.add(pwdPass);
 		
-		Legajotext = new JTextField();
-		Legajotext.setBounds(56, 121, 167, 20);
-		contentPane.add(Legajotext);
-		Legajotext.setColumns(10);
-		
-		JLabel lblIngreseContrasea = new JLabel("Ingrese contraseña");
-		lblIngreseContrasea.setBounds(56, 172, 192, 20);
+		JLabel lblIngreseContrasea = new JLabel("Ingrese contrase\u00F1a");
+		lblIngreseContrasea.setBounds(42, 128, 128, 14);
 		contentPane.add(lblIngreseContrasea);
-		
-		LegajoPass = new JPasswordField();
-		LegajoPass.setBounds(56, 203, 167, 20);
-		contentPane.add(LegajoPass);
-		
-		JLabel lblBienvenido = new JLabel("Bienvenido");
-		lblBienvenido.setBounds(177, 31, 129, 33);
-		contentPane.add(lblBienvenido);
 		
 		JButton btnIniciarSesion = new JButton("Iniciar Sesion");
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
-				if (checkInspector(Legajotext.getText(),String.valueOf(LegajoPass.getPassword()))) {
-					nuevaGUI=new InterfazInspector(Legajotext.getText(),conexionBD);
-                    cerrarVentana();
-                    nuevaGUI.setVisible(true);
-				}else
-				JOptionPane.showMessageDialog(getContentPane(), "Legajo o contraseña incorrectos", "ERROR",
-							JOptionPane.WARNING_MESSAGE);
-				
+				if (String.valueOf(pwdPass.getPassword())=="parq"){
+				nuevaGUI=new VentanaParquimetros(conexionBD);
+				cerrarVentana();
+				nuevaGUI.setVisible(true);
+			}else
+				JOptionPane.showMessageDialog(getContentPane(),"Password incorrecta","ERROR",JOptionPane.WARNING_MESSAGE);
 				
 			}
 		});
-		btnIniciarSesion.setBounds(283, 120, 103, 23);
+		btnIniciarSesion.setBounds(288, 152, 110, 23);
 		contentPane.add(btnIniciarSesion);
 		
 		JButton btnVolver = new JButton("Volver");
-		btnVolver.setBounds(283, 202, 103, 23);
-		btnVolver.addActionListener(new ActionListener(){
+		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("asjdksadj");
 				InicioSesion nueva=new InicioSesion();
 				cerrarVentana();
 				nueva.setVisible(true);
 			}
 		});
+		btnVolver.setBounds(288, 205, 110, 23);
 		contentPane.add(btnVolver);
-}
+		
+		JLabel lblIngresoParquimetro = new JLabel("Ingreso parquimetro");
+		lblIngresoParquimetro.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIngresoParquimetro.setForeground(Color.BLACK);
+		lblIngresoParquimetro.setBounds(136, 38, 166, 14);
+		contentPane.add(lblIngresoParquimetro);
+	}
 	private void conectarBD()
 	   {
 	         try
@@ -102,8 +91,8 @@ public class Gui_LoginInspector extends JFrame {
 	            String driver ="com.mysql.cj.jdbc.Driver";
 	        	String servidor = "localhost:3306";
 	        	String baseDatos = "parquimetros"; 
-	        	String usuario = "inspector";
-	        	String clave = "inspector";
+	        	String usuario = "parquimetro";
+	        	String clave = "parq";
 	            String uriConexion = "jdbc:mysql://" + servidor + "/" + 
 	        	                     baseDatos +"?serverTimezone=America/Argentina/Buenos_Aires";
 	            
@@ -141,29 +130,8 @@ public class Gui_LoginInspector extends JFrame {
 	            System.out.println("VendorError: " + ex.getErrorCode());
 	         }      
 	   }
+	   private void cerrarVentana() {
+	        this.dispose();
+	    }
 
-	
-	//chequea que el inspector este en la tabla de usuarios para activar su interfaz
-	private boolean checkInspector(String user, String pw) {
-		boolean salida = true;
-		try {
-			Statement st = this.conexionBD.createStatement();
-			ResultSet rs = st.executeQuery("select nombre,apellido from inspectores where legajo='" + user
-					+ "' and password=md5('" + pw + "')");
-		
-			salida = rs.next();
-			st.close();
-			rs.close();
-			
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return salida;
-	}
-	private void cerrarVentana() {
-        this.dispose();
-    }
 }
-	
-	
-	
