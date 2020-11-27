@@ -5,15 +5,21 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import quick.dbtable.DBTable;
+
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+
 import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -23,11 +29,12 @@ import javax.swing.JButton;
 public class VentanaParquimetros extends JFrame {
 
 	private JPanel contentPane;
-	private JTable table;
+	private DBTable table;
 	protected Connection conexionBD;
 	String calleSeleccionada;
 	String alturaSeleccionada;
 	String id="";
+	String id_parq;
 
 	
 	public VentanaParquimetros(Connection cnx) {
@@ -39,9 +46,17 @@ public class VentanaParquimetros extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		table = new JTable();
+		table = new DBTable();
 		table.setBounds(310, 30, 277, 361);
-		contentPane.add(table);
+		getContentPane().add(table);
+		table.setEditable(false);
+		
+		
+		JComboBox BoxTarjeta = new JComboBox();
+		BoxTarjeta.setBounds(10, 241, 267, 34);
+		contentPane.add(BoxTarjeta);
+ 
+
 		
 		Button buttonVolver = new Button("Volver");
 		buttonVolver.addActionListener(new ActionListener() {
@@ -58,12 +73,14 @@ public class VentanaParquimetros extends JFrame {
 		JComboBox BoxParquimetros = new JComboBox();
 		BoxParquimetros.setBounds(10, 158, 268, 34);
 		contentPane.add(BoxParquimetros);
+		BoxParquimetros.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				BoxTarjeta.removeAllItems();
 		
+			}
 		
-		JComboBox BoxTarjeta = new JComboBox();
-		BoxTarjeta.setBounds(10, 241, 267, 34);
-		contentPane.add(BoxTarjeta);
-		
+		});
+	
 		
 		JComboBox BoxUbicaciones = new JComboBox();
 		BoxUbicaciones.setBounds(10, 82, 268, 34);
@@ -73,14 +90,14 @@ public class VentanaParquimetros extends JFrame {
 				BoxParquimetros.removeAllItems();
 				calleSeleccionada= Filtrarcalle(BoxUbicaciones.getSelectedItem().toString());
 				alturaSeleccionada=Filtraraltura(BoxUbicaciones.getSelectedItem().toString());
-				AgregarParquimetros(BoxParquimetros,calleSeleccionada,alturaSeleccionada);
+				id_parq=AgregarParquimetros(BoxParquimetros,calleSeleccionada,alturaSeleccionada);
 				BoxParquimetros.setSelectedItem(null);
 				
 			}
 		});
 		
 		AgregarUbicaciones(BoxUbicaciones);
-		AgregarTarjetas(BoxTarjeta);
+		AgregarTarjetas(BoxTarjeta,calleSeleccionada,alturaSeleccionada);
 		
 		
 		JLabel lblSeleccionarUbicacion = new JLabel("Seleccionar Ubicacion ");
@@ -98,7 +115,7 @@ public class VentanaParquimetros extends JFrame {
 		JButton btnGenerarTabla = new JButton("Generar Tabla");
 		btnGenerarTabla.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				generarTabla(id,id_parq);
 			}
 		});
 		btnGenerarTabla.setBounds(85, 327, 125, 23);
@@ -162,29 +179,30 @@ public class VentanaParquimetros extends JFrame {
 	        }
 	        return numero;
 	    }
-		private void AgregarParquimetros (JComboBox Box, String calle, String numero) {
+		private String AgregarParquimetros (JComboBox Box, String calle, String numero) {
 			try {
 				Statement st=this.conexionBD.createStatement();
 				ResultSet rs=st.executeQuery("select id_parq,numero,calle,altura from parquimetros where calle='"+calle+"' AND altura='"+numero+"'");
 				while (rs.next()) {
 					id=rs.getString("id_parq");
-					String id= "ID:"+rs.getString("id_parq");
+					id_parq= "ID:"+rs.getString("id_parq");
 					String num= "num:" + rs.getString("numero");
 					String callea= "calle:"+ rs.getString("calle");
 					String altura= "altura:"+ rs.getString("altura");
-					Box.addItem(id + " " +num +" "+callea+" "+altura);				
+					Box.addItem(id_parq+ " " +num +" "+callea+" "+altura);				
 				}
 				rs.close();
 				st.close();
 			}catch(SQLException e) {
 				e.printStackTrace();
 			}
+			return id_parq;
 		}
 		
-		private void AgregarTarjetas(JComboBox Box) {
+		private void AgregarTarjetas(JComboBox Box,String calle, String altura) {
 			try {
 				Statement st= this.conexionBD.createStatement();
-				ResultSet rs= st.executeQuery("select id_tarjeta from tarjetas");
+				ResultSet rs= st.executeQuery("select id_tarjeta from tarjetas where ");
 				while (rs.next()) {
 					int tarjeta=rs.getInt("id_tarjeta");
 					Box.addItem(tarjeta);
@@ -196,4 +214,26 @@ public class VentanaParquimetros extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		
+		 public void generarTabla(String id , String id_parq){
+			   try {
+			   Statement stmt = this.conexionBD.createStatement();
+			  
+		    	 String sql="CALL conectar ("+id+","+id_parq+");";
+		    	 ResultSet rs= stmt.executeQuery(sql);
+	 	 		table.refresh(rs);
+			   }catch(SQLException ex)
+			   {
+			         // se muestra porque ocurre el error
+			         System.out.println("SQLException: " + ex.getMessage());
+			         System.out.println("SQLState: " + ex.getSQLState());
+			         System.out.println("VendorError: " + ex.getErrorCode());
+			         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
+			                                       ex.getMessage() + "\n", 
+			                                       "Error al ejecutar la consulta.",
+			                                       JOptionPane.ERROR_MESSAGE);
+			         
+			      }
+			   
+}
 }
