@@ -55,7 +55,13 @@ public class VentanaParquimetros extends JFrame {
 		JComboBox BoxTarjeta = new JComboBox();
 		BoxTarjeta.setBounds(10, 241, 267, 34);
 		contentPane.add(BoxTarjeta);
- 
+		BoxTarjeta.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				id=BoxTarjeta.getSelectedItem().toString();
+			}
+		
+		});
+	
 
 		
 		Button buttonVolver = new Button("Volver");
@@ -75,8 +81,7 @@ public class VentanaParquimetros extends JFrame {
 		contentPane.add(BoxParquimetros);
 		BoxParquimetros.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				BoxTarjeta.removeAllItems();
-		
+				
 			}
 		
 		});
@@ -184,12 +189,13 @@ public class VentanaParquimetros extends JFrame {
 				Statement st=this.conexionBD.createStatement();
 				ResultSet rs=st.executeQuery("select id_parq,numero,calle,altura from parquimetros where calle='"+calle+"' AND altura='"+numero+"'");
 				while (rs.next()) {
-					id=rs.getString("id_parq");
-					id_parq= "ID:"+rs.getString("id_parq");
+				
+					id_parq= rs.getString("id_parq");
 					String num= "num:" + rs.getString("numero");
 					String callea= "calle:"+ rs.getString("calle");
 					String altura= "altura:"+ rs.getString("altura");
-					Box.addItem(id_parq+ " " +num +" "+callea+" "+altura);				
+					Box.addItem(id_parq+ " " +num +" "+callea+" "+altura);
+					
 				}
 				rs.close();
 				st.close();
@@ -202,7 +208,7 @@ public class VentanaParquimetros extends JFrame {
 		private void AgregarTarjetas(JComboBox Box,String calle, String altura) {
 			try {
 				Statement st= this.conexionBD.createStatement();
-				ResultSet rs= st.executeQuery("select id_tarjeta from tarjetas where ");
+				ResultSet rs= st.executeQuery("select id_tarjeta from tarjetas");
 				while (rs.next()) {
 					int tarjeta=rs.getInt("id_tarjeta");
 					Box.addItem(tarjeta);
@@ -218,8 +224,7 @@ public class VentanaParquimetros extends JFrame {
 		 public void generarTabla(String id , String id_parq){
 			   try {
 			   Statement stmt = this.conexionBD.createStatement();
-			  
-		    	 String sql="CALL conectar ("+id+","+id_parq+");";
+			  String sql="CALL conectar ('"+id+"','"+id_parq+"')";
 		    	 ResultSet rs= stmt.executeQuery(sql);
 	 	 		table.refresh(rs);
 			   }catch(SQLException ex)

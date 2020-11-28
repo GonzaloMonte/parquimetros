@@ -43,7 +43,7 @@ public class Gui_LoginParquimetro extends JFrame {
 		contentPane.setLayout(null);
 		
 		pwdPass = new JPasswordField();
-		pwdPass.setEditable(false);
+//		pwdPass.setEditable(false);
 		pwdPass.setBounds(42, 153, 236, 20);
 		contentPane.add(pwdPass);
 		
@@ -55,7 +55,7 @@ public class Gui_LoginParquimetro extends JFrame {
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
-				if (String.valueOf(pwdPass.getPassword())=="parq"){
+				if (String.valueOf(pwdPass.getPassword()).equals("parq")){
 				nuevaGUI=new VentanaParquimetros(conexionBD);
 				cerrarVentana();
 				nuevaGUI.setVisible(true);

@@ -73,7 +73,7 @@ public class InicioSesion extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				ventanaParquimetro=new Gui_LoginParquimetro();
 				cerrarVentana();
-				ventanaInspector.setVisible(true);
+				ventanaParquimetro.setVisible(true);
 			}
 		});
 		btnParquimetro.setBounds(251, 112, 129, 44);
