@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 public class Gui_LoginParquimetro extends JFrame {
 
 	private JPanel contentPane;
-	private JPasswordField pwdPass;
+	private JTextField ingresoUsu;
 	public DBTable table; // Es la tabla que usaremos para la conexion a la BD
 	private VentanaParquimetros nuevaGUI;
 	protected Connection conexionBD=null;
@@ -42,12 +42,11 @@ public class Gui_LoginParquimetro extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		pwdPass = new JPasswordField();
-//		pwdPass.setEditable(false);
-		pwdPass.setBounds(42, 153, 236, 20);
-		contentPane.add(pwdPass);
+		ingresoUsu = new JTextField();
+		ingresoUsu.setBounds(42, 153, 236, 20);
+		contentPane.add(ingresoUsu);
 		
-		JLabel lblIngreseContrasea = new JLabel("Ingrese contrase\u00F1a");
+		JLabel lblIngreseContrasea = new JLabel("Ingrese Usuario");
 		lblIngreseContrasea.setBounds(42, 128, 128, 14);
 		contentPane.add(lblIngreseContrasea);
 		
@@ -55,7 +54,7 @@ public class Gui_LoginParquimetro extends JFrame {
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
-				if (String.valueOf(pwdPass.getPassword()).equals("parq")){
+				if (String.valueOf(ingresoUsu.getText()).equals("parq")){
 				nuevaGUI=new VentanaParquimetros(conexionBD);
 				cerrarVentana();
 				nuevaGUI.setVisible(true);
