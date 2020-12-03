@@ -48,7 +48,7 @@ public class VentanaParquimetros extends JFrame {
 		
 		table = new DBTable();
 		table.setBounds(310, 30, 277, 361);
-		getContentPane().add(table);
+
 		table.setEditable(false);
 		
 		
@@ -223,6 +223,11 @@ public class VentanaParquimetros extends JFrame {
 		
 		 public void generarTabla(String id , String id_parq){
 			   try {
+				    JFrame frame = new JFrame("Conexion de Tarjeta");
+				    
+			        frame.setBounds(100, 100, 450, 300);		 
+					frame.add(table);
+					frame.setVisible(true);
 			   Statement stmt = this.conexionBD.createStatement();
 			  String sql="CALL conectar ('"+id+"','"+id_parq+"')";
 		    	 ResultSet rs= stmt.executeQuery(sql);
