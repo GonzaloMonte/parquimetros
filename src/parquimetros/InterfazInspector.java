@@ -317,9 +317,17 @@ public class InterfazInspector extends JFrame {
 		   for(int i=0 ; i<aux.getSize() ; i++) {
 			   boolean encontro=false;
 			   ResultSet rs=s.executeQuery("select patente from estacionados where patente='"+aux.getElementAt(i)+"';");
-			   if(rs.next()) {
-
-			   }
+			   if(rs.next()) {//de aca    
+				   if(!(rs.getString("calle")==calleSeleccionada) || !(rs.getString("altura")==alturaSeleccionada)) {
+					   ResultSet rs4=s.executeQuery("select id_asociado_con from asociado_con where legajo="+legajo+";");
+					   if(rs4.next()) {
+						   id_asociado=rs4.getString("id_asociado_con");
+				   		}
+				   	
+				   multados.addElement((String) aux.getElementAt(i));
+				   s.execute("insert into multa(fecha,hora,patente,id_asociado_con) VALUE ('"+fecha+"','"+horario+"','"+aux.getElementAt(i)+"','"+id_asociado+"');");
+				   }
+			   }// hasta aca es lo agregado
 			   else {
 
 				   ResultSet rs2=s.executeQuery("select id_asociado_con from asociado_con where legajo="+legajo+";");
