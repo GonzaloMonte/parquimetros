@@ -54,7 +54,7 @@ public class Gui_LoginParquimetro extends JFrame {
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conectarBD();
-				if (String.valueOf(ingresoUsu.getText()).equals("parq")){
+				if (String.valueOf(ingresoUsu.getText()).equals("parquimetro")){
 				nuevaGUI=new VentanaParquimetros(conexionBD);
 				cerrarVentana();
 				nuevaGUI.setVisible(true);
