@@ -31,10 +31,10 @@ public class VentanaParquimetros extends JFrame {
 	private JPanel contentPane;
 	private DBTable table;
 	protected Connection conexionBD;
-	String calleSeleccionada;
-	String alturaSeleccionada;
-	String id="";
-	String id_parq;
+	protected String calleSeleccionada;
+	protected String alturaSeleccionada;
+	protected String id="";
+	protected String id_parq;
 
 	
 	public VentanaParquimetros(Connection cnx) {
@@ -81,7 +81,8 @@ public class VentanaParquimetros extends JFrame {
 		contentPane.add(BoxParquimetros);
 		BoxParquimetros.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				
+				if (BoxParquimetros.getItemCount()>0)
+				id_parq= BoxParquimetros.getSelectedItem().toString();
 			}
 		
 		});
@@ -96,7 +97,7 @@ public class VentanaParquimetros extends JFrame {
 				calleSeleccionada= Filtrarcalle(BoxUbicaciones.getSelectedItem().toString());
 				alturaSeleccionada=Filtraraltura(BoxUbicaciones.getSelectedItem().toString());
 				id_parq=AgregarParquimetros(BoxParquimetros,calleSeleccionada,alturaSeleccionada);
-				BoxParquimetros.setSelectedItem(null);
+				
 				
 			}
 		});
@@ -188,13 +189,10 @@ public class VentanaParquimetros extends JFrame {
 			try {
 				Statement st=this.conexionBD.createStatement();
 				ResultSet rs=st.executeQuery("select id_parq,numero,calle,altura from parquimetros where calle='"+calle+"' AND altura='"+numero+"'");
-				while (rs.next()) {
-				
-					id_parq= rs.getString("id_parq");
-					String num= "num:" + rs.getString("numero");
-					String callea= "calle:"+ rs.getString("calle");
-					String altura= "altura:"+ rs.getString("altura");
-					Box.addItem(id_parq+ " " +num +" "+callea+" "+altura);
+				while (rs.next()) {		
+					
+					String num=rs.getString("numero");
+					Box.addItem(num);
 					
 				}
 				rs.close();
@@ -229,11 +227,11 @@ public class VentanaParquimetros extends JFrame {
 					frame.add(table);
 					frame.setVisible(true);
 			   Statement stmt = this.conexionBD.createStatement();
-			  String sql="CALL conectar ('"+id+"','"+id_parq+"')";
-		    	 ResultSet rs= stmt.executeQuery(sql);
-	 	 		table.refresh(rs);
+			   String sql="CALL conectar ('"+id+"','"+id_parq+"')";
+			   ResultSet rs= stmt.executeQuery(sql);
+			   table.refresh(rs);
 			   }catch(SQLException ex)
-			   {
+			   { 
 			         // se muestra porque ocurre el error
 			         System.out.println("SQLException: " + ex.getMessage());
 			         System.out.println("SQLState: " + ex.getSQLState());
@@ -241,7 +239,7 @@ public class VentanaParquimetros extends JFrame {
 			         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
 			                                       ex.getMessage() + "\n", 
 			                                       "Error al ejecutar la consulta.",
-			                                       JOptionPane.ERROR_MESSAGE);
+			                                       JOptionPane.ERROR_MESSAGE); 
 			         
 			      }
 			   
